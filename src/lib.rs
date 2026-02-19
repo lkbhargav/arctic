@@ -700,7 +700,7 @@ impl PolarSensor {
             };
 
             while let Some(data) = notification_stream.next().await {
-                if data.uuid == NotifyUuid::MeasurementCP.into() {
+                if data.uuid == Uuid::from(NotifyUuid::MeasurementCP) {
                     response = Ok(ControlResponse::new(data.value)
                         .await
                         .expect("err value getting response"));
@@ -758,13 +758,13 @@ impl PolarSensor {
             // Process while the BLE connection is not broken or stopped.
             while let Some(data) = notification_stream.next().await {
                 if eh.should_continue().await {
-                    if data.uuid == NotifyUuid::BatteryLevel.into() {
+                    if data.uuid == Uuid::from(NotifyUuid::BatteryLevel) {
                         let battery = data.value[0];
                         eh.battery_update(battery).await;
-                    } else if data.uuid == NotifyUuid::HeartMeasurement.into() {
+                    } else if data.uuid == Uuid::from(NotifyUuid::HeartMeasurement) {
                         let hr = HeartRate::new(data.value)?;
                         eh.heart_rate_update(self, hr).await;
-                    } else if data.uuid == NotifyUuid::MeasurementData.into() {
+                    } else if data.uuid == Uuid::from(NotifyUuid::MeasurementData) {
                         if let Ok(response) = PmdRead::new(data.value) {
                             eh.measurement_update(self, response).await;
                         } else {
